@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from data_models.enums import TransactionType, AccountUser, AccountType, Bank, Currency, \
-    CategoryLevelOne, CategoryLevelTwo, CategoryLevelThree
+from data_models.enums import TransactionSign, AccountUser, AccountType, Bank, Currency, \
+    CategoryLevelOne, CategoryLevelTwo, CategoryLevelThree, TransactionType
 
 
 @dataclass
@@ -17,11 +17,12 @@ class BankAccount:
 class TransactionBase:
     transaction_id: str
     date: datetime.date
-    transaction_type: TransactionType
+    transaction_sign: TransactionSign
     bank_account: BankAccount
     transaction_description: str
     transaction_quantity: float
     currency: Currency
+    transaction_type: TransactionType
 
 
 @dataclass

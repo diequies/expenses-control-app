@@ -1,10 +1,68 @@
 from enum import Enum
 
 
-class TransactionType(Enum):
+class TransactionSign(Enum):
     """ Whether the money gets in or out """
     DEBIT = {'name': 'debit', 'sign': -1}
     CREDIT = {'name': 'credit', 'sign': 1}
+
+
+class TransactionType(Enum):
+    """ The type of transaction """
+    CONTACTLESS = {
+        'name': 'contactless',
+        'nationwide': ['contactless payment'],
+        'revolut': [],
+        'monzo': []
+    }
+    CARD_PAYMENT = {
+        'name': 'card payment',
+        'nationwide': ['visa purchase'],
+        'revolut': ['card_payment'],
+        'monzo': ['card payment']
+    }
+    BANK_TRANSFERENCE = {
+        'name': 'bank transference',
+        'nationwide': ['bank credit', 'transfer', 'visa credit', 'payment'],
+        'revolut': ['transfer'],
+        'monzo': ['monzo-to-monzo']
+    }
+    DIRECT_DEBIT = {
+        'name': 'direct debit',
+        'nationwide': ['direct debit'],
+        'revolut': [],
+        'monzo': []
+    }
+    WITHDRAWAL = {
+        'name': 'withdrawal',
+        'nationwide': ['withdrawal'],
+        'revolut': ['atm'],
+        'monzo': []
+    }
+    STANDING_ORDER = {
+        'name': 'standing order',
+        'nationwide': ['standing order'],
+        'revolut': [],
+        'monzo': []
+    }
+    TOP_UP = {
+        'name': 'top up',
+        'nationwide': [],
+        'revolut': ['topup'],
+        'monzo': ['faster payment']
+    }
+    CURRENCY_EXCHANGE = {
+        'name': 'currency exchange',
+        'nationwide': [],
+        'revolut': ['exchange'],
+        'monzo': []
+    }
+    OTHER = {
+        'name': 'other',
+        'nationwide': [],
+        'revolut': [],
+        'monzo': []
+    }
 
 
 class AccountUser(Enum):
@@ -21,16 +79,24 @@ class Bank(Enum):
     REVOLUT = 'revolut'
     MONZO = 'monzo'
 
+
 class Currency(Enum):
     """ The currency """
-    EUROS = 'euros'
-    POUNDS = 'pounds'
+    EUROS = {
+        'name': 'euros',
+        'short_name': 'EUR',
+        'symbol': '€'
+    }
+    POUNDS = {
+        'name': 'pounds',
+        'short_name': 'GBP',
+        'symbol': '£'
+    }
 
 
 class AccountType(Enum):
     """ Bank account type """
-    PERSONAL = 'personal'
-    JOINT = 'joint'
+    DEBIT = 'debit'
     CREDIT = 'credit'
 
 
