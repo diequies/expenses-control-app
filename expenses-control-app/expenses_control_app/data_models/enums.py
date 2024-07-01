@@ -11,54 +11,63 @@ class TransactionType(Enum):
     """ The type of transaction """
     CONTACTLESS = {
         'name': 'contactless',
+        'lloyds': [],
         'nationwide': ['contactless payment'],
         'revolut': [],
         'monzo': []
     }
     CARD_PAYMENT = {
         'name': 'card payment',
+        'lloyds': ['deb'],
         'nationwide': ['visa purchase'],
         'revolut': ['card_payment'],
         'monzo': ['card payment']
     }
     BANK_TRANSFERENCE = {
         'name': 'bank transference',
+        'lloyds': ['fpi', 'fpo'],
         'nationwide': ['bank credit', 'transfer', 'visa credit', 'payment'],
         'revolut': ['transfer'],
         'monzo': ['monzo-to-monzo']
     }
     DIRECT_DEBIT = {
         'name': 'direct debit',
+        'lloyds': ['dd'],
         'nationwide': ['direct debit'],
         'revolut': [],
         'monzo': []
     }
     WITHDRAWAL = {
         'name': 'withdrawal',
+        'lloyds': [],
         'nationwide': ['withdrawal'],
         'revolut': ['atm'],
         'monzo': []
     }
     STANDING_ORDER = {
         'name': 'standing order',
+        'lloyds': ['pay'],
         'nationwide': ['standing order'],
         'revolut': [],
-        'monzo': []
+        'monzo': ['SO']
     }
     TOP_UP = {
         'name': 'top up',
+        'lloyds': [],
         'nationwide': [],
         'revolut': ['topup'],
         'monzo': ['faster payment']
     }
     CURRENCY_EXCHANGE = {
         'name': 'currency exchange',
+        'lloyds': [],
         'nationwide': [],
         'revolut': ['exchange'],
         'monzo': []
     }
     OTHER = {
         'name': 'other',
+        'lloyds': [],
         'nationwide': [],
         'revolut': [],
         'monzo': []
@@ -78,6 +87,7 @@ class Bank(Enum):
     NATIONWIDE = 'nationwide'
     REVOLUT = 'revolut'
     MONZO = 'monzo'
+    OPENBANK = 'openbank'
 
 
 class Currency(Enum):
@@ -91,6 +101,26 @@ class Currency(Enum):
         'name': 'pounds',
         'short_name': 'GBP',
         'symbol': '£'
+    }
+    HUNGARIAN_FLORIN = {
+        'name': 'hungarian florin',
+        'short_name': 'HUF',
+        'symbol': 'Ft'
+    }
+    MEXICAN_PESO = {
+        'name': 'mexican peso',
+        'short_name': 'MXN',
+        'symbol': '$'
+    }
+    POLISH_ZLOTY = {
+        'name': 'polish zloty',
+        'short_name': 'PLN',
+        'symbol': 'zł'
+    }
+    AMERICAN_DOLLAR = {
+        'name': 'american dollar',
+        'short_name': 'USD',
+        'symbol': '$'
     }
 
 

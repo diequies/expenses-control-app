@@ -46,6 +46,9 @@ class DataIngestor:
         if self.bank_account.bank == Bank.MONZO:
             df_raw = pd.read_csv(file_path)
             self._process_monzo_data(df=df_raw)
+        if self.bank_account.bank == Bank.OPENBANK:
+            df_raw = pd.read_csv(file_path, header=10)
+            self._process_openbank_data(df=df_raw)
 
     def _process_lloyds_debit_data(
             self,
@@ -66,7 +69,7 @@ class DataIngestor:
             bank_account = self.bank_account
             transaction_description = row['Transaction Description']
             currency = self.bank_account.currency
-            transaction_type = TransactionType.OTHER
+            transaction_type = self._get_transaction_type(row['Transaction Type'])
             transaction_id = (f"{date}"
                               f"_{transaction_sign.value.get('name')}"
                               f"_{transaction_quantity}"
@@ -142,10 +145,10 @@ class DataIngestor:
             date = row['transaction_date']
             if pd.isna(row['Paid out']):
                 transaction_sign = TransactionSign.CREDIT
-                transaction_quantity = float(row['Paid in'][1:])
+                transaction_quantity = float((row['Paid in'].split('£')[1]))
             else:
                 transaction_sign = TransactionSign.DEBIT
-                transaction_quantity = float(row['Paid out'][1:])
+                transaction_quantity = float((row['Paid out'].split('£')[1]))
             bank_account = self.bank_account
             transaction_description = row['Description']
             currency = self.bank_account.currency
@@ -184,10 +187,10 @@ class DataIngestor:
             date = row['transaction_date']
             if pd.isna(row['Paid out']):
                 transaction_sign = TransactionSign.CREDIT
-                transaction_quantity = float(row['Paid in'][1:])
+                transaction_quantity = float((row['Paid in'].split('£')[1]))
             else:
                 transaction_sign = TransactionSign.DEBIT
-                transaction_quantity = float(row['Paid out'][1:])
+                transaction_quantity = float((row['Paid out'].split('£')[1]))
             bank_account = self.bank_account
             transaction_description = row['Transactions']
             currency = self.bank_account.currency
@@ -298,7 +301,51 @@ class DataIngestor:
             )
         return self.transactions
 
+    def _process_openbank_data(
+            self,
+            df: DataFrame
+    ) -> List[TransactionBase]:
+
+        df['transaction_date'] = df['Fecha Operaci?n'].apply(
+            lambda x: pd.to_datetime(x, format='%d/%m/%Y').date()
+        )
+        for index, row in df.iterrows():
+            date = row['transaction_date']
+            quantity = float(row['Importe'].replace('.', '').replace(',', '.'))
+            if quantity < 0:
+                transaction_sign = TransactionSign.DEBIT
+            else:
+                transaction_sign = TransactionSign.CREDIT
+            transaction_quantity = np.abs(quantity)
+            bank_account = self.bank_account
+            transaction_description = row['Concepto']
+            currency = self.bank_account.currency
+            transaction_type = TransactionType.OTHER
+            transaction_id = (f"{date}"
+                              f"_{transaction_sign.value.get('name')}"
+                              f"_{transaction_quantity}"
+                              f"_{bank_account.bank.value}"
+                              f"_{bank_account.account_type.value}"
+                              f"_{bank_account.account_user.value}")
+            if transaction_id in self.existing_transactions:
+                continue
+            self.transactions.append(
+                TransactionBase(
+                    transaction_id=transaction_id,
+                    date=date,
+                    transaction_sign=transaction_sign,
+                    bank_account=bank_account,
+                    transaction_description=transaction_description,
+                    transaction_quantity=transaction_quantity,
+                    currency=currency,
+                    transaction_type=transaction_type
+                )
+            )
+        return self.transactions
+
     def _get_transaction_type(self, transaction_type_text: str) -> TransactionType:
+        if pd.isna(transaction_type_text):
+            return TransactionType.OTHER
         for transaction_type in TransactionType:
             for transaction_string \
                     in transaction_type.value.get(self.bank_account.bank.value, []):
